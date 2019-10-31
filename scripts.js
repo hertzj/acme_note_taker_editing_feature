@@ -80,12 +80,12 @@ class NoteEditor extends Component {
 
     render() {
         const { text } = this.state;
-        const { onChange } = this.state;
+        const { onChange, onSubmit } = this;
         return (
             <div>
             <form action="">
-                <input type="text" onChange = {this.onChange.bind(this)} value={ text }/>
-                <button onClick = {this.onSubmit}>Update</button>
+                <input type="text" onChange = {onChange} value={ text }/>
+                <button onClick = {onSubmit}>Update</button>
             </form>
         </div>
         )
