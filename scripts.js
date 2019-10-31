@@ -27,16 +27,76 @@ const Notes = ({ notes, archived, update, destroy })=> {
       {
         notes.filter(note => note.archived === archived).map( note => <li 
           key={ note.id }>
-            { note.text}
+            {/* <Link to={`/notes/${note.id}`}>{ note.text }</Link> */}
+            {archived? note.text : <Link to={`/notes/${note.id}`}>{ note.text }</Link>}
             <br />
             <button onClick={()=> { update({...note, archived: !note.archived})}}>{ archived ? 'unarchive': 'archive' }</button>
             <button onClick={ ()=> destroy(note)}>destroy</button>
           </li>)
       }
+    
     </ul>
+    
   );
 
 };
+
+
+class NoteEditor extends Component {
+    constructor({props, notes, update }) {
+        super();
+        this.state = {
+            text: '',
+            notes,
+            props,
+            update,
+            note: {},
+        }
+    }
+    componentDidMount() {
+        const notes = this.state.notes;
+        const location = this.props.location;
+        const pathname = location.pathname;
+        const id = pathname.slice(7);
+        // console.log(id)
+        // console.log('notes: ', notes);
+        const note = notes.filter(note => note.id === id)[0];
+        console.log('note: ', note);
+        const text = note.text;
+        // console.log("text:", note.text)
+        this.setState({text, note})
+    }
+
+    onChange = (ev) => {
+        this.setState({
+            text: ev.target.value
+        })
+    }
+
+    onSubmit = (ev) => {
+        ev.preventDefault();
+        const newText = this.state.text;
+        console.log(newText)
+        const { note } = this.state;
+
+        this.state.update({...note, text: newText});
+        window.location.hash = '#/notes';
+        
+    }
+
+    render() {
+        const { text } = this.state;
+        const { onChange } = this.state;
+        return (
+            <div>
+            <form action="">
+                <input type="text" onChange = {this.onChange.bind(this)} value={ text }/>
+                <button onClick = {this.onSubmit}>Update</button>
+            </form>
+        </div>
+        )
+    }
+}
 
 const Nav = ({ path, notes })=> {
   const archived = notes.filter( note => note.archived);
@@ -76,6 +136,7 @@ class Create extends Component{
   }
 }
 
+// eslint-disable-next-line react/no-multi-comp
 class App extends Component{
   constructor(){
     super();
@@ -113,10 +174,11 @@ class App extends Component{
         <Route render={ ({ location } )=> <Nav path={ location.pathname } notes={ notes } />} />
         <h1>Acme Note--taker for { user.id ? user.fullName : '' }</h1>
         <Switch>
-          <Route exact path='/notes' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } />
           <Route path='/notes/create' render={ ({ history })=> <Create history={ history } create={ create } notes={ notes } /> } />
+          <Route path='/notes/:id' render= { (props) => <NoteEditor  {...props} notes={ notes } update={ update }/> } />
+          <Route path='/notes/' render={ ()=> <Notes destroy={ destroy} archived={ false } notes={ notes} update={ update }/> } /> 
           <Route path='/archived' render={ ()=> <Notes destroy={ destroy } archived={ true } notes={ notes} update={ update }/> } />
-          <Redirect to='/notes' />
+          {/* <Redirect to='/notes' /> */}
         </Switch>
       </HashRouter>
 
