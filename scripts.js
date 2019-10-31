@@ -27,7 +27,6 @@ const Notes = ({ notes, archived, update, destroy })=> {
       {
         notes.filter(note => note.archived === archived).map( note => <li 
           key={ note.id }>
-            {/* <Link to={`/notes/${note.id}`}>{ note.text }</Link> */}
             {archived? note.text : <Link to={`/notes/${note.id}`}>{ note.text }</Link>}
             <br />
             <button onClick={()=> { update({...note, archived: !note.archived})}}>{ archived ? 'unarchive': 'archive' }</button>
@@ -58,12 +57,8 @@ class NoteEditor extends Component {
         const location = this.props.location;
         const pathname = location.pathname;
         const id = pathname.slice(7);
-        // console.log(id)
-        // console.log('notes: ', notes);
         const note = notes.filter(note => note.id === id)[0];
-        console.log('note: ', note);
         const text = note.text;
-        // console.log("text:", note.text)
         this.setState({text, note})
     }
 
@@ -76,7 +71,6 @@ class NoteEditor extends Component {
     onSubmit = (ev) => {
         ev.preventDefault();
         const newText = this.state.text;
-        console.log(newText)
         const { note } = this.state;
 
         this.state.update({...note, text: newText});
